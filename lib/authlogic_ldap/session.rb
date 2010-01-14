@@ -127,6 +127,10 @@ module AuthlogicLdap
         def ldap_port
           self.class.ldap_port
         end
+        
+        def ldap_domain 
+          self.class.ldap_domain
+        end
     end
   end
 end
