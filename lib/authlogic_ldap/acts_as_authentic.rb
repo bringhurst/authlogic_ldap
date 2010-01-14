@@ -43,6 +43,10 @@ module AuthlogicLdap
           errors.add_to_base(ldap.get_operation_result.message) if !ldap.bind
         end
         
+        def using_ldap?
+          respond_to?(:ldap_login) && !ldap_login.blank?
+        end
+        
         def validate_ldap?
           ldap_login_changed? && !ldap_login.blank?
         end
