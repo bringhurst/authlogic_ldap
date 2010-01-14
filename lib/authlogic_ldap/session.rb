@@ -92,6 +92,10 @@ module AuthlogicLdap
         def authenticating_with_ldap?
           !ldap_host.blank? && (!ldap_login.blank? || !ldap_password.blank?)
         end
+ 
+        def find_by_ldap_login_method
+          self.class.find_by_ldap_login_method
+        end       
         
         def validate_by_ldap
           errors.add(:ldap_login, I18n.t('error_messages.ldap_login_blank', :default => "can not be blank")) if ldap_login.blank?
