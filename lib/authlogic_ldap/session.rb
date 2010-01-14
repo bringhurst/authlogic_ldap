@@ -54,6 +54,17 @@ module AuthlogicLdap
         rw_config(:find_by_ldap_login_method, value, :find_by_ldap_login)
       end
       alias_method :find_by_ldap_login_method=, :find_by_ldap_login_method
+      
+      # Add this in your Session object to Auto Register a new user using ldap
+      def auto_register(value=true)
+        auto_register_value(value)
+      end
+      
+      def auto_register_value(value=nil)
+        rw_config(:auto_register,value,false)
+      end
+      
+      alias_method :auto_register=,:auto_register
     end
     
     module Methods
@@ -95,7 +106,11 @@ module AuthlogicLdap
  
         def find_by_ldap_login_method
           self.class.find_by_ldap_login_method
-        end       
+        end  
+        
+        def auto_register?
+          self.class.auto_register_value
+        end     
         
         def validate_by_ldap
           errors.add(:ldap_login, I18n.t('error_messages.ldap_login_blank', :default => "can not be blank")) if ldap_login.blank?
@@ -114,7 +129,20 @@ module AuthlogicLdap
           
           if ldap.bind
             self.attempted_record = search_for_record(find_by_ldap_login_method, ldap_login)
-            errors.add(:ldap_login, I18n.t('error_messages.ldap_login_not_found', :default => "does not exist")) if attempted_record.blank?
+            if attempted_record.blank?
+              if auto_register?
+                self.attempted_record = klass.new :ldap_login=>ldap_login
+                attempted_record.save do |result|
+                  if result
+                    true
+                  else
+                    false
+                  end
+                end
+              else
+                errors.add(:ldap_login, I18n.t('error_messages.ldap_login_not_found', :default => "does not exist"))
+              end
+            end
           else
             errors.add_to_base(ldap.get_operation_result.message)
           end
