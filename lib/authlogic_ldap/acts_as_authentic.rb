@@ -39,7 +39,11 @@ module AuthlogicLdap
           ldap = Net::LDAP.new
           ldap.host = session_class.ldap_host
           ldap.port = session_class.ldap_port
-          ldap.auth ldap_login, ldap_password
+          if ldap_domain.nil?
+            ldap.auth ldap_login, ldap_password
+          else
+            ldap.auth ldap_domain + "\\" + ldap_login, ldap_password
+          end
           errors.add_to_base(ldap.get_operation_result.message) if !ldap.bind
         end
         

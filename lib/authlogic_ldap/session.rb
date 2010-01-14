@@ -27,6 +27,15 @@ module AuthlogicLdap
       end
       alias_method :ldap_port=, :ldap_port
       
+      # The domain to check, if any.
+      #
+      # * <tt>Default:</tt> nil
+      # * <tt>Accepts:</tt> String
+      def ldap_domain(value = nil)
+        rw_config(:ldap_domain, value)
+      end
+      alias_method :ldap_domain=, :ldap_domain
+      
       # Once LDAP authentication has succeeded we need to find the user in the database. By default this just calls the
       # find_by_ldap_login method provided by ActiveRecord. If you have a more advanced set up and need to find users
       # differently specify your own method and define your logic in there.
@@ -92,7 +101,13 @@ module AuthlogicLdap
           ldap = Net::LDAP.new
           ldap.host = ldap_host
           ldap.port = ldap_port
-          ldap.auth ldap_login, ldap_password
+          
+          if ldap_domain.nil?
+            ldap.auth ldap_login, ldap_password
+          else
+            ldap.auth ldap_domain + "\\" + ldap_login, ldap_password
+          end
+          
           if ldap.bind
             self.attempted_record = search_for_record(find_by_ldap_login_method, ldap_login)
             errors.add(:ldap_login, I18n.t('error_messages.ldap_login_not_found', :default => "does not exist")) if attempted_record.blank?
