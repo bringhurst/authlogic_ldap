@@ -14,7 +14,7 @@ module AuthlogicLdap
       # * <tt>Default:</tt> nil
       # * <tt>Accepts:</tt> String
       def ldap_host(value = nil)
-        config(:ldap_host, value)
+        rw_config:ldap_host, value)
       end
       alias_method :ldap_host=, :ldap_host
       
@@ -23,7 +23,7 @@ module AuthlogicLdap
       # * <tt>Default:</tt> 389
       # * <tt>Accepts:</tt> Fixnum, integer
       def ldap_port(value = nil)
-        config(:ldap_port, value, 389)
+        rw_config:ldap_port, value, 389)
       end
       alias_method :ldap_port=, :ldap_port
       
@@ -42,7 +42,7 @@ module AuthlogicLdap
       # * <tt>Default:</tt> :find_by_ldap_login
       # * <tt>Accepts:</tt> Symbol
       def find_by_ldap_login_method(value = nil)
-        config(:find_by_ldap_login_method, value, :find_by_ldap_login)
+        rw_config:find_by_ldap_login_method, value, :find_by_ldap_login)
       end
       alias_method :find_by_ldap_login_method=, :find_by_ldap_login_method
     end
